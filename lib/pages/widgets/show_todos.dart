@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/src/provider.dart';
 
 import 'package:todoappbloc/cubits/cubits_shelf.dart';
@@ -11,49 +12,81 @@ class ShowTodos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Todo> todos = context.watch<FilteredTodosCubit>().state.filteredTodos;
-    return ListView.separated(
-        shrinkWrap: true,
-        primary: false,
-        itemBuilder: (context, index) {
-          return Dismissible(
-              confirmDismiss: (direction) {
-                return showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text("Are you sure?"),
-                    content: Text("Do you really want to delete?"),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                          child: Text("Yes")),
-                      TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(false);
-                          },
-                          child: Text("No")),
-                    ],
-                  ),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<TodoListCubit, TodoListState>(
+          listener: (context, state) {
+            context.read<FilteredTodosCubit>().setFilteredTodos(
+                  filter: context.read<TodoFilterCubit>().state.filter,
+                  todoList: state.todoList,
+                  searchTerm: context.read<TodoSearchCubit>().state.searchTerm,
                 );
-              },
-              onDismissed: (direction) {
-                context.read<TodoListCubit>().removeTodos(todos[index]);
-              },
-              background: ShowBackground(
-                direction: 0,
+          },
+        ),
+        BlocListener<TodoFilterCubit, TodoFilterState>(
+          listener: (context, state) {
+            context.read<FilteredTodosCubit>().setFilteredTodos(
+                  filter: state.filter,
+                  todoList: context.read<TodoListCubit>().state.todoList,
+                  searchTerm: context.read<TodoSearchCubit>().state.searchTerm,
+                );
+          },
+        ),
+        BlocListener<TodoSearchCubit, TodoSearchState>(
+          listener: (context, state) {
+            context.read<FilteredTodosCubit>().setFilteredTodos(
+                  filter: context.read<TodoFilterCubit>().state.filter,
+                  todoList: context.read<TodoListCubit>().state.todoList,
+                  searchTerm: state.searchTerm,
+                );
+          },
+          child: Container(),
+        )
+      ],
+      child: ListView.separated(
+          shrinkWrap: true,
+          primary: false,
+          itemBuilder: (context, index) {
+            return Dismissible(
+                confirmDismiss: (direction) {
+                  return showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text("Are you sure?"),
+                      content: Text("Do you really want to delete?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: Text("Yes")),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: Text("No")),
+                      ],
+                    ),
+                  );
+                },
+                onDismissed: (direction) {
+                  context.read<TodoListCubit>().removeTodos(todos[index]);
+                },
+                background: ShowBackground(
+                  direction: 0,
+                ),
+                secondaryBackground: ShowBackground(
+                  direction: 1,
+                ),
+                key: ValueKey(todos[index].id),
+                child: TodoItem(todo: todos[index]));
+          },
+          separatorBuilder: (context, index) => Divider(
+                thickness: 2,
+                color: Colors.blue[900],
               ),
-              secondaryBackground: ShowBackground(
-                direction: 1,
-              ),
-              key: ValueKey(todos[index].id),
-              child: TodoItem(todo: todos[index]));
-        },
-        separatorBuilder: (context, index) => Divider(
-              thickness: 2,
-              color: Colors.blue[900],
-            ),
-        itemCount: todos.length);
+          itemCount: todos.length),
+    );
   }
 }
 
