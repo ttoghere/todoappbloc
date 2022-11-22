@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:todoappbloc/blocs/bloc_shelf.dart';
 import 'package:todoappbloc/models/todo_model.dart';
-import 'package:todoappbloc/utils/debounce.dart';
 
 class SearchAndFilterTodo extends StatelessWidget {
-  final debounce = Debounce(milliseconds: 700);
   SearchAndFilterTodo({Key? key}) : super(key: key);
 
   @override
@@ -21,11 +19,9 @@ class SearchAndFilterTodo extends StatelessWidget {
           ),
           onChanged: (String? newSearchTerm) {
             if (newSearchTerm != null) {
-              debounce.run(() {
-                context
-                    .read<TodoSearchBlocBloc>()
-                    .add(SetSearchTermEvent(newSearchTerm: newSearchTerm));
-              });
+              context
+                  .read<TodoSearchBlocBloc>()
+                  .add(SetSearchTermEvent(newSearchTerm: newSearchTerm));
             }
           },
         ),
