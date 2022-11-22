@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todoappbloc/cubits/cubits_shelf.dart';
+import 'package:todoappbloc/blocs/bloc_shelf.dart';
 import 'package:todoappbloc/pages/pages_shelf.dart';
 
 void main() => runApp(MyApp());
@@ -10,26 +10,50 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<TodoFilterCubit>(
-          create: (context) => TodoFilterCubit(),
+        // BlocProvider<TodoFilterBloc>(
+        //   create: (context) => TodoFilterBloc(),
+        // ),
+        // BlocProvider<TodoSearchBloc>(
+        //   create: (context) => TodoSearchBloc(),
+        // ),
+        // BlocProvider<TodoListBloc>(
+        //   create: (context) => TodoListBloc(),
+        // ),
+        // BlocProvider<ActiveTodoListBloc>(
+        //   create: (context) => ActiveTodoListBloc(
+        //     initialActiveTodoCount:
+        //         context.read<TodoListBloc>().state.todoList.length,
+        //   ),
+        // ),
+        // BlocProvider<FilteredTodosBloc>(
+        //   create: (context) => FilteredTodosBloc(
+        //     initialTodos: context.read<TodoListBloc>().state.todoList,
+        //   ),
+        // ),
+        BlocProvider<TodoFilterBlocBloc>(
+          create: (context) => TodoFilterBlocBloc(),
         ),
-        BlocProvider<TodoSearchCubit>(
-          create: (context) => TodoSearchCubit(),
+        BlocProvider<TodoSearchBlocBloc>(
+          create: (context) => TodoSearchBlocBloc(),
         ),
-        BlocProvider<TodoListCubit>(
-          create: (context) => TodoListCubit(),
+        BlocProvider<TodoListBlocBloc>(
+          create: (context) => TodoListBlocBloc(),
         ),
-        BlocProvider<ActiveTodoListCubit>(
-          create: (context) => ActiveTodoListCubit(
+        BlocProvider<ActiveTodosListBloc>(
+          create: (context) => ActiveTodosListBloc(
+            todoListBlocBloc: BlocProvider.of<TodoListBlocBloc>(context),
             initialActiveTodoCount:
-                context.read<TodoListCubit>().state.todoList.length,
+                context.read<TodoListBlocBloc>().state.todoList.length,
           ),
         ),
-        BlocProvider<FilteredTodosCubit>(
-          create: (context) => FilteredTodosCubit(
-            initialTodos: context.read<TodoListCubit>().state.todoList,
+        BlocProvider<FilteredTodosBlocBloc>(
+          create: (context) => FilteredTodosBlocBloc(
+            initialTodos: context.read<TodoListBlocBloc>().state.todoList,
+            todoFilterBlocBloc: BlocProvider.of<TodoFilterBlocBloc>(context),
+            todoSearchBlocBloc: BlocProvider.of<TodoSearchBlocBloc>(context),
+            todoListBlocBloc: BlocProvider.of<TodoListBlocBloc>(context),
           ),
-        )
+        ),
       ],
       child: MaterialApp(
         title: 'Todos App',

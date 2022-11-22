@@ -1,9 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
-
-import 'package:todoappbloc/cubits/todo_filter/todo_filter_cubit.dart';
-import 'package:todoappbloc/cubits/todo_search/todo_search_cubit.dart';
+import 'package:todoappbloc/blocs/bloc_shelf.dart';
 import 'package:todoappbloc/models/todo_model.dart';
 import 'package:todoappbloc/utils/debounce.dart';
 
@@ -24,7 +22,9 @@ class SearchAndFilterTodo extends StatelessWidget {
           onChanged: (String? newSearchTerm) {
             if (newSearchTerm != null) {
               debounce.run(() {
-                context.read<TodoSearchCubit>().setSearchTerm(newSearchTerm);
+                context
+                    .read<TodoSearchBlocBloc>()
+                    .add(SetSearchTermEvent(newSearchTerm: newSearchTerm));
               });
             }
           },
@@ -56,7 +56,9 @@ class FilterButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        context.read<TodoFilterCubit>().changeFilter(filter);
+        context
+            .read<TodoFilterBlocBloc>()
+            .add(ChangeFilterEvent(newFilter: filter));
       },
       child: Text(
         filter == Filter.all
@@ -72,6 +74,6 @@ class FilterButton extends StatelessWidget {
 }
 
 Color textColor({required BuildContext context, required Filter filter}) {
-  final currentFilter = context.watch<TodoFilterCubit>().state.filter;
+  final currentFilter = context.watch<TodoFilterBlocBloc>().state.filter;
   return currentFilter == filter ? Colors.red[900]! : Colors.black;
 }
