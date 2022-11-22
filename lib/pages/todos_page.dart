@@ -19,6 +19,7 @@ class TodosPage extends StatelessWidget {
               CreateTodo(),
               SizedBox(height: 20),
               SearchAndFilterTodo(),
+              ShowTodos(),
             ],
           ),
         ),
