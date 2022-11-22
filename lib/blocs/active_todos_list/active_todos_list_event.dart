@@ -6,3 +6,17 @@ abstract class ActiveTodosListEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class CalculateActiveTodoCount extends ActiveTodosListEvent {
+  final int activeTodoListCount;
+  CalculateActiveTodoCount({required this.activeTodoListCount});
+  @override
+  String toString() {
+    " CalculateActiveTodoCount(activeTodoListCount: $activeTodoListCount)";
+    return super.toString();
+  }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [activeTodoListCount];
+}

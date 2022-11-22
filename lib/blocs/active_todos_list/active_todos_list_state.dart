@@ -1,10 +1,25 @@
 part of 'active_todos_list_bloc.dart';
 
-abstract class ActiveTodosListState extends Equatable {
-  const ActiveTodosListState();
-  
+class ActiveTodoListBlocState extends Equatable {
+  final int activeTodo;
+  ActiveTodoListBlocState({required this.activeTodo});
   @override
-  List<Object> get props => [];
-}
+  // TODO: implement props
+  List<Object?> get props => [activeTodo];
 
-class ActiveTodosListInitial extends ActiveTodosListState {}
+  factory ActiveTodoListBlocState.initial() {
+    return ActiveTodoListBlocState(activeTodo: 0);
+  }
+
+  @override
+  String toString() {
+    "ActiveTodoListBlocState(todoList: $activeTodo)";
+    return super.toString();
+  }
+
+  ActiveTodoListBlocState copyWith({
+    int? activeTodo,
+  }) {
+    return ActiveTodoListBlocState(activeTodo: activeTodo ?? this.activeTodo);
+  }
+}
