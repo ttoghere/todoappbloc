@@ -1,11 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
-import 'package:todoappbloc/cubits/todo_filter/todo_filter_cubit.dart';
-import 'package:todoappbloc/cubits/todo_search/todo_search_cubit.dart';
+import 'package:todoappbloc/blocs/bloc_shelf.dart';
 import 'package:todoappbloc/models/todo_model.dart';
 
 class SearchAndFilterTodo extends StatelessWidget {
-  const SearchAndFilterTodo({Key? key}) : super(key: key);
+  SearchAndFilterTodo({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,9 @@ class SearchAndFilterTodo extends StatelessWidget {
           ),
           onChanged: (String? newSearchTerm) {
             if (newSearchTerm != null) {
-              context.read<TodoSearchCubit>().setSearchTerm(newSearchTerm);
+              context
+                  .read<TodoSearchBlocBloc>()
+                  .add(SetSearchTermEvent(newSearchTerm: newSearchTerm));
             }
           },
         ),
@@ -27,19 +29,32 @@ class SearchAndFilterTodo extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            filterButton(context, Filter.all),
-            filterButton(context, Filter.active),
-            filterButton(context, Filter.completed),
+            FilterButton(context: context, filter: Filter.all),
+            FilterButton(context: context, filter: Filter.active),
+            FilterButton(context: context, filter: Filter.completed),
           ],
         )
       ],
     );
   }
+}
 
-  Widget filterButton(BuildContext context, Filter filter) {
+class FilterButton extends StatelessWidget {
+  final BuildContext context;
+  final Filter filter;
+  const FilterButton({
+    Key? key,
+    required this.context,
+    required this.filter,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        context.read<TodoFilterCubit>().changeFilter(filter);
+        context
+            .read<TodoFilterBlocBloc>()
+            .add(ChangeFilterEvent(newFilter: filter));
       },
       child: Text(
         filter == Filter.all
@@ -47,13 +62,14 @@ class SearchAndFilterTodo extends StatelessWidget {
             : filter == Filter.active
                 ? "Active"
                 : "Completed",
-        style: TextStyle(fontSize: 18, color: textColor(context, filter)),
+        style: TextStyle(
+            fontSize: 18, color: textColor(context: context, filter: filter)),
       ),
     );
   }
+}
 
-  Color textColor(BuildContext context, Filter filter) {
-    final currentFilter = context.watch<TodoFilterCubit>().state.filter;
-    return currentFilter == filter ? Colors.red[900]! : Colors.black;
-  }
+Color textColor({required BuildContext context, required Filter filter}) {
+  final currentFilter = context.watch<TodoFilterBlocBloc>().state.filter;
+  return currentFilter == filter ? Colors.red[900]! : Colors.black;
 }
